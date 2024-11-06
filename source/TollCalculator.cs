@@ -74,7 +74,7 @@ namespace TollFeeCalculator
             else return 0;
         }
 
-        public bool IsTollFreeDate(DateTime date)
+        private bool IsTollFreeDate(DateTime date)
         {
             TollInfo tollInfo = GetTollInformation();
 
@@ -90,7 +90,7 @@ namespace TollFeeCalculator
 
         private TollInfo GetTollInformation()
         {
-            var fileName = "TollInformation.json";
+            var fileName = "TollFeeInformation.json";
             var jsonString = File.ReadAllText(fileName);
             TollInfo tollInfo = JsonSerializer.Deserialize<TollInfo>(jsonString)!;
 

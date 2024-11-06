@@ -1,0 +1,87 @@
+{
+    "TollFreeDates": [
+        "2013-01-01T00:00:00",
+        "2013-03-28T00:00:00",
+        "2013-03-29T00:00:00",
+        "2013-04-01T00:00:00",
+        "2013-04-30T00:00:00",
+        "2013-05-01T00:00:00",
+        "2013-05-08T00:00:00",
+        "2013-05-09T00:00:00",
+        "2013-06-05T00:00:00",
+        "2013-06-06T00:00:00",
+        "2013-06-21T00:00:00",
+        "2013-11-01T00:00:00",
+        "2013-12-24T00:00:00",
+        "2013-12-25T00:00:00",
+        "2013-12-26T00:00:00",
+        "2013-12-31T00:00:00"
+    ],
+    "TollFreeDays": [ "Saturday", "Sunday" ],
+    "TollFreeMonths": [ 7 ],
+    "TollFees": [
+        {
+            "StartHour": 6,
+            "StartMinute": 0,
+            "EndHour": 6,
+            "EndMinute": 29,
+            "Cost": 8
+        },
+        {
+            "StartHour": 6,
+            "StartMinute": 30,
+            "EndHour": 6,
+            "EndMinute": 59,
+            "Cost": 13
+        },
+        {
+            "StartHour": 7,
+            "StartMinute": 0,
+            "EndHour": 7,
+            "EndMinute": 59,
+            "Cost": 18
+        },
+        {
+            "StartHour": 8,
+            "StartMinute": 0,
+            "EndHour": 8,
+            "EndMinute": 29,
+            "Cost": 13
+        },
+        {
+            "StartHour": 8,
+            "StartMinute": 30,
+            "EndHour": 14,
+            "EndMinute": 59,
+            "Cost": 8
+        },
+        {
+            "StartHour": 15,
+            "StartMinute": 0,
+            "EndHour": 15,
+            "EndMinute": 29,
+            "Cost": 13
+        },
+        {
+            "StartHour": 15,
+            "StartMinute": 30,
+            "EndHour": 16,
+            "EndMinute": 59,
+            "Cost": 18
+        },
+        {
+            "StartHour": 17,
+            "StartMinute": 0,
+            "EndHour": 17,
+            "EndMinute": 59,
+            "Cost": 13
+        },
+        {
+            "StartHour": 18,
+            "StartMinute": 0,
+            "EndHour": 18,
+            "EndMinute": 29,
+            "Cost": 8
+        }
+    ]
+}
