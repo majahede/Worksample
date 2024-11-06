@@ -15,7 +15,7 @@ namespace TollFeeCalculator
          * @return - the total toll fee for that day
          */
 
-        public int GetTollFee(Vehicle vehicle, DateTime[] dates)
+        public int GetDailyTollFee(Vehicle vehicle, DateTime[] dates)
         {
             DateTime intervalStart = dates[0];
             int totalFee = 0;
@@ -59,19 +59,20 @@ namespace TollFeeCalculator
         {
             if (IsTollFreeDate(date) || IsTollFreeVehicle(vehicle)) return 0;
 
-            int hour = date.Hour;
-            int minute = date.Minute;
+            TollInfo tollInfo = GetTollInformation();
 
-            if (hour == 6 && minute >= 0 && minute <= 29) return 8;
-            else if (hour == 6 && minute >= 30 && minute <= 59) return 13;
-            else if (hour == 7 && minute >= 0 && minute <= 59) return 18;
-            else if (hour == 8 && minute >= 0 && minute <= 29) return 13;
-            else if (hour >= 8 && hour <= 14 && minute >= 30 && minute <= 59) return 8;
-            else if (hour == 15 && minute >= 0 && minute <= 29) return 13;
-            else if (hour == 15 && minute >= 0 || hour == 16 && minute <= 59) return 18;
-            else if (hour == 17 && minute >= 0 && minute <= 59) return 13;
-            else if (hour == 18 && minute >= 0 && minute <= 29) return 8;
-            else return 0;
+            foreach (TollFee tollFee in tollInfo.TollFees)
+            {
+                var start = new TimeSpan(tollFee.StartHour, tollFee.StartMinute, 0);
+                var end = new TimeSpan(tollFee.EndHour, tollFee.EndMinute, 0);
+
+                if (date.TimeOfDay > start && date.TimeOfDay < end)
+                {
+                    return tollFee.Cost;
+                }
+            }
+
+            return 0;
         }
 
         private bool IsTollFreeDate(DateTime date)
@@ -90,8 +91,8 @@ namespace TollFeeCalculator
 
         private TollInfo GetTollInformation()
         {
-            var fileName = "TollFeeInformation.json";
-            var jsonString = File.ReadAllText(fileName);
+            var path = "TollFeeInformation.json";
+            var jsonString = File.ReadAllText(path);
             TollInfo tollInfo = JsonSerializer.Deserialize<TollInfo>(jsonString)!;
 
             return tollInfo;
