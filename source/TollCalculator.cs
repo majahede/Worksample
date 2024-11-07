@@ -1,22 +1,15 @@
-﻿
-using System.Text.Json;
+﻿using System.Text.Json;
 using TollFeeCalculator.Models;
+using TollFeeCalculator.Vehicles;
 
 namespace TollFeeCalculator
 {
     public class TollCalculator
     {
-
-        /**
-         * Calculate the total toll fee for one day
-         *
-         * @param vehicle - the vehicle
-         * @param dates   - date and time of all passes on one day
-         * @return - the total toll fee for that day
-         */
-
         public int GetDailyTollFee(Vehicle vehicle, DateTime[] dates)
         {
+            vehicle = vehicle ?? new Car();
+
             DateTime intervalStart = dates[0];
             int totalFee = 0;
 
@@ -43,19 +36,7 @@ namespace TollFeeCalculator
             return totalFee;
         }
 
-        private bool IsTollFreeVehicle(Vehicle vehicle)
-        {
-            if (vehicle == null) return false;
-            String vehicleType = vehicle.GetVehicleType();
-            return vehicleType.Equals(TollFreeVehicles.Motorbike.ToString()) ||
-                   vehicleType.Equals(TollFreeVehicles.Tractor.ToString()) ||
-                   vehicleType.Equals(TollFreeVehicles.Emergency.ToString()) ||
-                   vehicleType.Equals(TollFreeVehicles.Diplomat.ToString()) ||
-                   vehicleType.Equals(TollFreeVehicles.Foreign.ToString()) ||
-                   vehicleType.Equals(TollFreeVehicles.Military.ToString());
-        }
-
-        public int GetTollFee(DateTime date, Vehicle vehicle)
+        private int GetTollFee(DateTime date, Vehicle vehicle)
         {
             if (IsTollFreeDate(date) || IsTollFreeVehicle(vehicle)) return 0;
 
@@ -96,6 +77,11 @@ namespace TollFeeCalculator
             TollInfo tollInfo = JsonSerializer.Deserialize<TollInfo>(jsonString)!;
 
             return tollInfo;
+        }
+
+        private bool IsTollFreeVehicle(Vehicle vehicle)
+        {
+            return Enum.IsDefined(typeof(TollFreeVehicles), vehicle.GetVehicleType());
         }
 
         private enum TollFreeVehicles
