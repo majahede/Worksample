@@ -8,32 +8,33 @@ namespace TollFeeCalculator
     {
         public int GetDailyTollFee(Vehicle vehicle, DateTime[] dates)
         {
-            vehicle = vehicle ?? new Car();
+            if (dates == null || dates.Length == 0) return 0;
 
-            DateTime intervalStart = dates[0];
-            int totalFee = 0;
+            var intervalStart = dates[0];
+            var maxFee = 60;
+            var totalFee = 0;
+            var tempFee = 0;
 
-            foreach (DateTime date in dates)
+            for (int i = 0; i < dates.Length; i++)
             {
-                int nextFee = GetTollFee(date, vehicle);
-                int tempFee = GetTollFee(intervalStart, vehicle);
 
-                long diffInMillies = date.Millisecond - intervalStart.Millisecond;
-                long minutes = diffInMillies / 1000 / 60;
+                var nextFee = GetTollFee(dates[i], vehicle);
 
-                if (minutes <= 60)
+                if (IsWithinHour(dates[i], intervalStart))
                 {
-                    if (totalFee > 0) totalFee -= tempFee;
-                    if (nextFee >= tempFee) tempFee = nextFee;
-                    totalFee += tempFee;
+                    tempFee = Math.Max(tempFee, nextFee);
                 }
                 else
                 {
-                    totalFee += nextFee;
+                    totalFee += tempFee;
+                    intervalStart = dates[i];
+                    tempFee = nextFee;
                 }
             }
-            if (totalFee > 60) totalFee = 60;
-            return totalFee;
+
+            totalFee += tempFee;
+
+            return totalFee > maxFee ? maxFee : totalFee;
         }
 
         private int GetTollFee(DateTime date, Vehicle vehicle)
@@ -47,7 +48,7 @@ namespace TollFeeCalculator
                 var start = new TimeSpan(tollFee.StartHour, tollFee.StartMinute, 0);
                 var end = new TimeSpan(tollFee.EndHour, tollFee.EndMinute, 0);
 
-                if (date.TimeOfDay > start && date.TimeOfDay < end)
+                if (date.TimeOfDay >= start && date.TimeOfDay <= end)
                 {
                     return tollFee.Cost;
                 }
@@ -56,18 +57,19 @@ namespace TollFeeCalculator
             return 0;
         }
 
+        private bool IsWithinHour(DateTime date, DateTime intervalStart)
+        {
+            var minutes = date.Subtract(intervalStart).TotalMinutes;
+            return minutes <= 60;
+        }
+
         private bool IsTollFreeDate(DateTime date)
         {
             TollInfo tollInfo = GetTollInformation();
 
-            if (tollInfo.TollFreeDays.Contains(date.DayOfWeek.ToString()) ||
-                tollInfo.TollFreeMonths.Contains(date.Month) ||
-                tollInfo.TollFreeDates.Contains(date.Date))
-            {
-                return true;
-            }
-
-            return false;
+            return tollInfo.TollFreeDays.Contains(date.DayOfWeek.ToString()) ||
+                   tollInfo.TollFreeMonths.Contains(date.Month) ||
+                   tollInfo.TollFreeDates.Contains(date.Date);
         }
 
         private TollInfo GetTollInformation()
