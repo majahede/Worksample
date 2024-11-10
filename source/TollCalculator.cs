@@ -10,6 +10,8 @@ namespace TollFeeCalculator
         {
             if (dates == null || dates.Length == 0) return 0;
 
+            TollInfo tollInfo = GetTollInformation();
+
             var intervalStart = dates[0];
             var maxFee = 60;
             var totalFee = 0;
@@ -17,8 +19,7 @@ namespace TollFeeCalculator
 
             for (int i = 0; i < dates.Length; i++)
             {
-
-                var nextFee = GetTollFee(dates[i], vehicle);
+                var nextFee = GetTollFee(dates[i], vehicle, tollInfo);
 
                 if (IsWithinHour(dates[i], intervalStart))
                 {
@@ -37,24 +38,17 @@ namespace TollFeeCalculator
             return totalFee > maxFee ? maxFee : totalFee;
         }
 
-        private int GetTollFee(DateTime date, Vehicle vehicle)
+        private int GetTollFee(DateTime date, Vehicle vehicle, TollInfo tollInfo)
         {
-            if (IsTollFreeDate(date) || IsTollFreeVehicle(vehicle)) return 0;
+            var vehicleHandler = new VehicleHandler();
 
-            TollInfo tollInfo = GetTollInformation();
+            if (IsTollFreeDate(date) || vehicleHandler.IsTollFreeVehicle(vehicle)) return 0;
 
-            foreach (TollFee tollFee in tollInfo.TollFees)
-            {
-                var start = new TimeSpan(tollFee.StartHour, tollFee.StartMinute, 0);
-                var end = new TimeSpan(tollFee.EndHour, tollFee.EndMinute, 0);
+            var tollFee = tollInfo.TollFees.FirstOrDefault(tollFee =>
+                date.TimeOfDay >= new TimeSpan(tollFee.StartHour, tollFee.StartMinute, 0) &&
+                date.TimeOfDay <= new TimeSpan(tollFee.EndHour, tollFee.EndMinute, 0));
 
-                if (date.TimeOfDay >= start && date.TimeOfDay <= end)
-                {
-                    return tollFee.Cost;
-                }
-            }
-
-            return 0;
+            return tollFee?.Cost ?? 0;
         }
 
         private bool IsWithinHour(DateTime date, DateTime intervalStart)
@@ -79,21 +73,6 @@ namespace TollFeeCalculator
             TollInfo tollInfo = JsonSerializer.Deserialize<TollInfo>(jsonString)!;
 
             return tollInfo;
-        }
-
-        private bool IsTollFreeVehicle(Vehicle vehicle)
-        {
-            return Enum.IsDefined(typeof(TollFreeVehicles), vehicle.GetVehicleType());
-        }
-
-        private enum TollFreeVehicles
-        {
-            Motorbike = 0,
-            Tractor = 1,
-            Emergency = 2,
-            Diplomat = 3,
-            Foreign = 4,
-            Military = 5
         }
     }
 }
