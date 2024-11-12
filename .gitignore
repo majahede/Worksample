@@ -1,3 +1,6 @@
-/bin
-/obj
+TollFeeCalculator/bin
+TollFeeCalculator/obj
 .vs/
+TollFeeCalculatorTests/bin
+TollFeeCalculatorTests/obj
+/TestResults
